@@ -3,29 +3,34 @@
 
 @theme {
   --font-sans: "Inter", "Helvetica Neue", Arial, sans-serif, system-ui;
+  --font-serif: "Georgia", serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
-  --color-brand-primary: #2D6A4F;
-  --color-brand-accent: #D4E09B;
-  --color-brand-bg: #F8F9FA;
-  --color-brand-text-main: #1B4332;
-  --color-brand-text-muted: #52796F;
+  /* Warm Food App Palette */
+  --color-brand-primary: #FF4E00; /* Vibrant Orange/Red */
+  --color-brand-accent: #FF9F1C; /* Warm Yellow/Orange */
+  --color-brand-bg: #FFFBF7; /* Creamy off-white */
+  --color-brand-surface: #FFFFFF;
+  --color-brand-text-main: #1A0D00;
+  --color-brand-text-muted: #6B5E54;
 
-  --color-dark-bg: #0f172a;
-  --color-dark-surface: #1e293b;
-  --color-dark-text-main: #f1f5f9;
-  --color-dark-text-muted: #94a3b8;
-  --color-dark-primary: #4ade80; /* Brighter green for dark mode accessibility */
+  /* Dark Mode Palette */
+  --color-dark-bg: #0D0D0D;
+  --color-dark-surface: #1A1A1A;
+  --color-dark-text-main: #FFFBF7;
+  --color-dark-text-muted: #A39489;
+  --color-dark-primary: #FF5E14;
   
-  --shadow-sleek: 0 4px 20px rgba(0,0,0,0.08);
-  --radius-sleek: 12px;
+  --shadow-sleek: 0 4px 20px rgba(0,0,0,0.06);
+  --shadow-float: 0 10px 40px rgba(255, 78, 0, 0.1);
+  --radius-sleek: 20px;
 }
 
 @layer base {
   html {
-    @apply transition-colors duration-300;
+    @apply transition-colors duration-500 scroll-smooth;
   }
   body {
-    @apply font-sans bg-brand-bg text-brand-text-main min-h-screen selection:bg-brand-primary selection:text-white transition-colors duration-300 dark:bg-dark-bg dark:text-dark-text-main;
+    @apply font-sans bg-brand-bg text-brand-text-main min-h-screen selection:bg-brand-primary selection:text-white transition-colors duration-500 dark:bg-dark-bg dark:text-dark-text-main overflow-x-hidden;
   }
 }

@@ -37,27 +37,32 @@ export default function UnitConverter() {
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="fixed bottom-24 right-8 w-80 bg-white border border-brand-primary/10 rounded-3xl shadow-2xl p-6 z-50 overflow-hidden"
+            className="fixed bottom-24 right-8 w-80 bg-white dark:bg-dark-surface border border-brand-primary/10 dark:border-white/10 rounded-[32px] shadow-2xl p-8 z-50 overflow-hidden"
           >
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="font-serif text-xl font-bold italic text-brand-primary">Conversor</h3>
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-brand-primary/10 rounded-xl flex items-center justify-center">
+                  <Scale className="w-4 h-4 text-brand-primary" />
+                </div>
+                <h3 className="text-xl font-black tracking-tight dark:text-white">Conversor</h3>
+              </div>
               <button 
                 onClick={() => setIsOpen(false)}
-                className="p-1 hover:bg-brand-primary/5 rounded-full transition-colors"
+                className="p-1 hover:bg-brand-primary/5 dark:hover:bg-white/5 rounded-full transition-colors dark:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div className="space-y-2">
-                <label className="text-[10px] font-bold uppercase tracking-widest opacity-40">Valor</label>
+                <label className="text-[10px] font-black uppercase tracking-widest text-brand-text-muted dark:text-dark-text-muted ml-2">Valor</label>
                 <input 
                   type="number" 
                   value={value}
                   onChange={(e) => setValue(e.target.value)}
                   placeholder="Ex: 500"
-                  className="w-full px-4 py-3 bg-brand-primary/5 rounded-xl border border-transparent focus:border-brand-accent focus:bg-white outline-none transition-all font-mono"
+                  className="w-full px-5 py-4 bg-brand-bg dark:bg-dark-bg rounded-2xl border-2 border-transparent focus:border-brand-primary/30 focus:bg-white dark:focus:bg-dark-bg outline-none transition-all font-bold dark:text-white shadow-inner"
                 />
               </div>
 
@@ -65,17 +70,17 @@ export default function UnitConverter() {
                 <select 
                   value={fromUnit}
                   onChange={(e) => setFromUnit(e.target.value)}
-                  className="flex-1 px-3 py-2 bg-brand-primary/5 rounded-xl text-sm outline-none border border-transparent focus:border-brand-accent"
+                  className="flex-1 px-4 py-3 bg-brand-bg dark:bg-dark-bg rounded-2xl text-xs font-black uppercase tracking-widest outline-none border border-transparent focus:border-brand-primary/30 dark:text-white"
                 >
                   <option value="g">Gramas (g)</option>
                   <option value="cups">Xícaras</option>
                   <option value="ml">Mililitros (ml)</option>
                 </select>
-                <ArrowRightLeft className="w-4 h-4 opacity-20" />
+                <ArrowRightLeft className="w-4 h-4 text-brand-primary" />
                 <select 
                   value={toUnit}
                   onChange={(e) => setToUnit(e.target.value)}
-                  className="flex-1 px-3 py-2 bg-brand-primary/5 rounded-xl text-sm outline-none border border-transparent focus:border-brand-accent"
+                  className="flex-1 px-4 py-3 bg-brand-bg dark:bg-dark-bg rounded-2xl text-xs font-black uppercase tracking-widest outline-none border border-transparent focus:border-brand-primary/30 dark:text-white"
                 >
                   <option value="g">Gramas (g)</option>
                   <option value="cups">Xícaras</option>
@@ -83,15 +88,15 @@ export default function UnitConverter() {
                 </select>
               </div>
 
-              <div className="pt-4 border-t border-brand-primary/5">
-                <div className="text-[10px] font-bold uppercase tracking-widest opacity-40 mb-1">Resultado Estimado</div>
-                <div className="text-3xl font-serif font-bold text-brand-accent italic">
-                  {calculateResult().toFixed(2)} <span className="text-sm not-italic opacity-60 ml-1">{toUnit}</span>
+              <div className="pt-6 border-t border-black/5 dark:border-white/5">
+                <div className="text-[10px] font-black uppercase tracking-widest text-brand-text-muted dark:text-dark-text-muted mb-2">Resultado Estimado</div>
+                <div className="text-4xl font-black text-brand-accent tracking-tighter">
+                  {calculateResult().toFixed(2)} <span className="text-sm uppercase tracking-widest opacity-40 ml-1">{toUnit === 'cups' ? 'Xícs' : toUnit}</span>
                 </div>
               </div>
 
-              <p className="text-[9px] opacity-40 italic mt-4 leading-tight">
-                * As conversões são aproximadas e podem variar dependendo da densidade do ingrediente.
+              <p className="text-[10px] font-bold text-brand-text-muted dark:text-dark-text-muted italic mt-4 leading-snug opacity-60">
+                * As conversões são aproximadas para referência culinária rápida.
               </p>
             </div>
           </motion.div>

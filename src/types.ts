@@ -1,5 +1,5 @@
 export type Difficulty = 'Easy' | 'Medium' | 'Hard';
-export type Category = 'Sweet' | 'Savory' | 'Healthy' | 'Bakery';
+export type Category = 'Café da manhã' | 'Almoço' | 'Jantar' | 'Sobremesas' | 'Lanches';
 export type CostEstimate = '$' | '$$' | '$$$';
 
 export interface Ingredient {

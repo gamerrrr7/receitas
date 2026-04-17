@@ -2,145 +2,174 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import RecipeCard from '../components/RecipeCard';
-import Pagination from '../components/Pagination';
 import { ALL_RECIPES } from '../data/recipes';
 import { Category, Difficulty } from '../types';
-import { Search, SlidersHorizontal, ArrowRight, UtensilsCrossed } from 'lucide-react';
-import { motion } from 'motion/react';
+import { Search, SlidersHorizontal, ArrowRight, UtensilsCrossed, Flame, Sparkles, TrendingUp } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils';
-
-const ITEMS_PER_PAGE = 8;
+import { useUser } from '../lib/UserContext';
 
 export default function Home() {
   const navigate = useNavigate();
+  const { user } = useUser();
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeCategory, setActiveCategory] = useState<Category | 'All'>('All');
-  const [activeDifficulty, setActiveDifficulty] = useState<Difficulty | 'All'>('All');
-  const [currentPage, setCurrentPage] = useState(1);
+  const [activeCategory, setActiveCategory] = useState<Category | 'Todos' | 'Favoritos'>('Todos');
+  const [activeDifficulty, setActiveDifficulty] = useState<Difficulty | 'Todos'>('Todos');
 
   const filteredRecipes = useMemo(() => {
     return ALL_RECIPES.filter(recipe => {
       const matchesSearch = (recipe.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
                           (recipe.ingredients || []).some(ing => (ing.name || '').toLowerCase().includes(searchTerm.toLowerCase()));
-      const matchesCategory = activeCategory === 'All' || recipe.category === activeCategory;
-      const matchesDifficulty = activeDifficulty === 'All' || recipe.difficulty === activeDifficulty;
+      const matchesCategory = activeCategory === 'Todos' 
+        ? true 
+        : activeCategory === 'Favoritos' 
+          ? user?.favorites.includes(recipe.id)
+          : recipe.category === activeCategory;
+      const matchesDifficulty = activeDifficulty === 'Todos' || recipe.difficulty === activeDifficulty;
       return matchesSearch && matchesCategory && matchesDifficulty;
     });
-  }, [searchTerm, activeCategory, activeDifficulty]);
+  }, [searchTerm, activeCategory, activeDifficulty, user]);
 
-  const totalPages = Math.ceil(filteredRecipes.length / ITEMS_PER_PAGE);
-  const paginatedRecipes = useMemo(() => {
-    const start = (currentPage - 1) * ITEMS_PER_PAGE;
-    return filteredRecipes.slice(start, start + ITEMS_PER_PAGE);
-  }, [filteredRecipes, currentPage]);
+  const popularRecipes = useMemo(() => {
+    return [...ALL_RECIPES].sort((a, b) => (b.ratingCount || 0) - (a.ratingCount || 0)).slice(0, 4);
+  }, []);
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  const categories: (Category | 'Todos' | 'Favoritos')[] = ['Todos', 'Favoritos', 'Café da manhã', 'Almoço', 'Jantar', 'Sobremesas', 'Lanches'];
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="pb-24"
+      className="pb-32 bg-brand-bg dark:bg-dark-bg min-h-screen transition-colors duration-500"
     >
       <Header />
       
       {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-10 py-16 md:py-24 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        <div className="space-y-8">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-brand-primary text-white rounded-[6px] text-[10px] font-bold uppercase tracking-[0.2em] shadow-sm">
-            <UtensilsCrossed className="w-3 h-3" />
-            Ganhador do Prêmio Gastronomia 2026
-          </div>
-          <h1 className="text-[56px] md:text-[82px] font-[800] text-brand-text-main dark:text-dark-text-main leading-[0.9] tracking-[-2px] transition-colors">
-            Cozinhe como um <span className="text-brand-primary">Pro</span>.
-          </h1>
-          <p className="text-[18px] text-brand-text-muted dark:text-dark-text-muted max-w-lg leading-relaxed font-medium transition-colors">
-            Acesse receitas testadas, ferramentas profissionais e um modo de cozinha imersivo focado no que importa: o sabor.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 pt-4">
-            <div className="relative flex-1 group">
-              <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-text-muted dark:text-dark-text-muted" />
-              <input 
-                type="text" 
-                placeholder="Busque por ingrediente..."
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="w-full bg-[#F1F3F5] dark:bg-slate-800 rounded-full py-4 pl-12 pr-4 outline-none border border-transparent focus:bg-white dark:focus:bg-slate-700 focus:border-brand-primary transition-all text-sm dark:text-white"
-              />
+      <section className="relative overflow-hidden pt-12 pb-20 md:py-32">
+        <div className="max-w-7xl mx-auto px-6 md:px-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
+          <motion.div 
+            initial={{ x: -50, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="space-y-8"
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-brand-primary/10 text-brand-primary rounded-xl text-[10px] font-black uppercase tracking-[0.2em]">
+              <Sparkles className="w-3 h-3" />
+              Upgrade na sua cozinha
             </div>
-            <button className="px-10 py-4 bg-brand-primary text-white rounded-full font-extrabold uppercase tracking-widest text-[11px] flex items-center justify-center gap-3 hover:bg-brand-primary/90 transition-all shadow-sleek">
-              Explorar <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-        <div className="relative aspect-square md:aspect-[4/5] rounded-[24px] overflow-hidden shadow-sleek">
-          <img 
-            src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=1200&q=80" 
-            className="w-full h-full object-cover" 
-            referrerPolicy="no-referrer"
-            alt="Professional Chef"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-brand-primary/40 to-transparent" />
-          <div className="absolute bottom-10 left-10 right-10 p-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-[12px] text-white">
-            <div className="text-[10px] font-bold uppercase tracking-widest mb-1 opacity-80">Receita do Dia</div>
-            <div className="text-2xl font-extrabold">Risoto de Açafrão</div>
-          </div>
+            <h1 className="text-[52px] md:text-[88px] font-black text-brand-text-main dark:text-white leading-[0.88] tracking-[-0.04em]">
+              {user ? (
+                <>Olá, <span className="text-brand-primary">{user.displayName.split(' ')[0]}</span>.<br /> O que vamos cozinhar?</>
+              ) : (
+                <>Onde o sabor <br />encontra a <span className="text-brand-primary">perfeição</span>.</>
+              )}
+            </h1>
+            <p className="text-lg md:text-xl text-brand-text-muted dark:text-dark-text-muted max-w-lg leading-relaxed font-medium">
+              Explore mais de 30 receitas curadas, técnicas profissionais e um guia passo a passo infalível.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 pt-4">
+              <div className="relative flex-1 group">
+                <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-brand-text-muted dark:text-dark-text-muted transition-colors group-focus-within:text-brand-primary" />
+                <input 
+                  type="text" 
+                  placeholder="Macarrão, bolo, frango..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full bg-white dark:bg-dark-surface rounded-[24px] py-4 pl-14 pr-4 outline-none border-2 border-black/5 dark:border-white/5 focus:border-brand-primary/30 transition-all text-sm dark:text-white font-bold shadow-xl shadow-black/[0.02]"
+                />
+              </div>
+              <button className="px-10 py-4 bg-brand-primary text-white rounded-[24px] font-black uppercase tracking-widest text-[11px] flex items-center justify-center gap-3 hover:translate-y-[-4px] active:translate-y-0 transition-all shadow-xl shadow-brand-primary/20">
+                Começar <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </motion.div>
+
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0, rotate: 5 }}
+            animate={{ scale: 1, opacity: 1, rotate: 0 }}
+            transition={{ delay: 0.4 }}
+            className="hidden lg:block relative"
+          >
+            <div className="relative aspect-[4/5] rounded-[40px] overflow-hidden shadow-2xl skew-y-1">
+              <img 
+                src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=1200&q=80" 
+                className="w-full h-full object-cover scale-110" 
+                referrerPolicy="no-referrer"
+                alt="Chef profissional"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+              <div className="absolute bottom-8 left-8 right-8 p-6 bg-white/10 backdrop-blur-xl border border-white/20 rounded-[24px] text-white">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="flex gap-0.5">
+                    {[1, 2, 3, 4, 5].map(i => <div key={i} className="w-1.5 h-1.5 rounded-full bg-brand-accent" />)}
+                  </div>
+                  <span className="text-[10px] font-bold uppercase tracking-widest opacity-80">Recomendação Premium</span>
+                </div>
+                <div className="text-3xl font-black tracking-tight leading-none mb-2">Risoto Trufado de Cogumelos</div>
+                <div className="text-sm opacity-70 font-medium">Por Chef Lucas Mendonça</div>
+              </div>
+            </div>
+            {/* Floating elements */}
+            <div className="absolute -top-10 -right-10 w-32 h-32 bg-brand-accent rounded-full blur-3xl opacity-30 animate-pulse" />
+            <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-brand-primary rounded-full blur-3xl opacity-20" />
+          </motion.div>
         </div>
       </section>
 
-      {/* Filters */}
-      <section className="max-w-7xl mx-auto px-10 mb-12">
-        <div className="flex flex-wrap items-center gap-6 pb-6 border-b border-black/5 dark:border-white/5 transition-colors">
-          <div className="flex items-center gap-2 mr-4">
-            <SlidersHorizontal className="w-4 h-4 text-brand-text-muted dark:text-dark-text-muted" />
-            <span className="text-[10px] font-bold uppercase tracking-widest text-brand-text-muted dark:text-dark-text-muted">Filtros</span>
+      {/* Popular Recipes Section */}
+      {!searchTerm && activeCategory === 'Todos' && (
+        <section className="max-w-7xl mx-auto px-6 md:px-10 mb-20">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-orange-500/10 rounded-xl flex items-center justify-center">
+                <TrendingUp className="w-6 h-6 text-orange-500" />
+              </div>
+              <h2 className="text-3xl font-black tracking-tight dark:text-white">Mais amadas</h2>
+            </div>
+            <div className="h-[2px] flex-1 mx-8 bg-black/5 dark:bg-white/5 hidden sm:block" />
           </div>
-          
-          <div className="flex gap-3">
-            {['All', 'Savory', 'Sweet', 'Healthy', 'Bakery'].map((cat) => (
-              <button
-                key={cat}
-                onClick={() => {
-                  setActiveCategory(cat as any);
-                  setCurrentPage(1);
-                }}
-                className={cn(
-                  "px-6 py-2 rounded-[8px] text-[11px] font-bold uppercase tracking-widest border transition-all",
-                  activeCategory === cat 
-                    ? "bg-brand-primary text-white border-brand-primary shadow-sleek" 
-                    : "bg-white dark:bg-slate-800 border-[#dee2e6] dark:border-white/10 text-brand-text-muted dark:text-dark-text-muted hover:border-brand-primary hover:text-brand-primary"
-                )}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {popularRecipes.map((recipe, idx) => (
+              <motion.div
+                key={recipe.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1 }}
               >
-                {cat === 'All' ? 'Todos' : cat === 'Savory' ? 'Salgados' : cat === 'Sweet' ? 'Doces' : cat === 'Healthy' ? 'Saudável' : 'Padaria'}
-              </button>
+                <RecipeCard recipe={recipe} onClick={(r) => navigate(`/recipe/${r.slug}`)} />
+              </motion.div>
             ))}
           </div>
+        </section>
+      )}
 
-          <div className="h-6 w-[1px] bg-black/5 dark:bg-white/5 mx-2" />
-
-          <div className="flex gap-3">
-            {['All', 'Easy', 'Medium', 'Hard'].map((diff) => (
+      {/* Main Categories & Navigation */}
+      <section className="max-w-7xl mx-auto px-6 md:px-10 mb-12">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-8 border-b border-black/5 dark:border-white/5 transition-colors">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-brand-primary/10 rounded-xl flex items-center justify-center">
+              <UtensilsCrossed className="w-5 h-5 text-brand-primary" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-black tracking-tighter dark:text-white">Explore o Menu</h2>
+              <p className="text-xs text-brand-text-muted dark:text-dark-text-muted font-bold uppercase tracking-widest">Encontre seu estilo</p>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-3 overflow-x-auto no-scrollbar py-2">
+            {categories.map((cat) => (
               <button
-                key={diff}
-                onClick={() => {
-                  setActiveDifficulty(diff as any);
-                  setCurrentPage(1);
-                }}
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
                 className={cn(
-                  "px-6 py-2 rounded-[8px] text-[11px] font-bold uppercase tracking-widest border transition-all",
-                  activeDifficulty === diff 
-                    ? "bg-brand-primary text-white border-brand-primary shadow-sleek" 
-                    : "bg-white dark:bg-slate-800 border-[#dee2e6] dark:border-white/10 text-brand-text-muted dark:text-dark-text-muted hover:border-brand-primary hover:text-brand-primary"
+                  "px-6 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest border-2 transition-all whitespace-nowrap",
+                  activeCategory === cat 
+                    ? "bg-brand-primary text-white border-brand-primary shadow-lg shadow-brand-primary/20 scale-105" 
+                    : "bg-white dark:bg-dark-surface border-black/5 dark:border-white/5 text-brand-text-muted dark:text-dark-text-muted hover:border-brand-primary/30"
                 )}
               >
-                {diff === 'All' ? 'Dificuldade' : diff}
+                {cat}
               </button>
             ))}
           </div>
@@ -148,48 +177,79 @@ export default function Home() {
       </section>
 
       {/* Recipe Grid */}
-      <section className="max-w-7xl mx-auto px-10">
-        {paginatedRecipes.length > 0 ? (
-          <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-              {paginatedRecipes.map((recipe) => (
-                <RecipeCard 
-                  key={recipe.id} 
-                  recipe={recipe} 
-                  onClick={(r) => navigate(`/recipe/${r.slug}`)}
-                />
+      <section className="max-w-7xl mx-auto px-6 md:px-10 min-h-[400px]">
+        {filteredRecipes.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <AnimatePresence mode="popLayout">
+              {filteredRecipes.map((recipe, idx) => (
+                <motion.div
+                  key={recipe.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.3, delay: idx % 8 * 0.05 }}
+                >
+                  <RecipeCard 
+                    recipe={recipe} 
+                    onClick={(r) => navigate(`/recipe/${r.slug}`)}
+                  />
+                </motion.div>
               ))}
-            </div>
-            <Pagination 
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            />
-          </>
+            </AnimatePresence>
+          </div>
         ) : (
-          <div className="py-24 text-center space-y-4">
-            <p className="text-6xl italic font-[800] text-brand-primary/10 dark:text-white/5 transition-colors">Nenhuma receita encontrada...</p>
-            <p className="text-brand-text-muted dark:text-dark-text-muted uppercase tracking-widest font-bold text-xs transition-colors">Tente mudar seus filtros de busca</p>
+          <div className="py-32 text-center space-y-6">
+            <div className="w-24 h-24 bg-brand-primary/5 rounded-full flex items-center justify-center mx-auto">
+              <Search className="w-10 h-10 text-brand-primary/20" />
+            </div>
+            <div>
+              <p className="text-4xl font-black tracking-tight text-brand-text-main dark:text-white transition-colors">Nenhum resultado...</p>
+              <p className="text-brand-text-muted dark:text-dark-text-muted font-bold uppercase tracking-widest mt-2">Tente buscar por outros termos ou categorias</p>
+            </div>
           </div>
         )}
       </section>
 
-      {/* Persistence Notification Bar (Newsletter) */}
-      <div className="fixed bottom-0 left-0 right-0 bg-brand-primary text-white py-4 z-40 transform translate-y-0 shadow-2xl transition-colors">
-        <div className="max-w-7xl mx-auto px-10 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-white text-brand-primary rounded-full flex items-center justify-center font-[800] text-xl italic">R</div>
-            <div>
-              <div className="text-sm font-bold uppercase tracking-widest">Entre na Comunidade Receita Pro</div>
-              <div className="text-xs opacity-60">Receba eBooks exclusivos e salve suas receitas favoritas.</div>
+      {/* Recommendations Banner */}
+      {!searchTerm && (
+        <section className="max-w-7xl mx-auto px-6 md:px-10 mt-32 mb-10">
+          <div className="bg-brand-primary rounded-[40px] p-8 md:p-16 relative overflow-hidden flex flex-col md:flex-row items-center gap-12 text-white">
+            <div className="relative z-10 flex-1 space-y-6">
+              <div className="flex items-center gap-2 px-3 py-1 bg-white/20 rounded-full w-fit text-[10px] font-black uppercase tracking-widest">
+                <Flame className="w-3 h-3" /> Receita da Semana
+              </div>
+              <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-none">
+                O Brownie <br />que você <br />merece.
+              </h2>
+              <p className="text-lg opacity-80 max-w-sm font-medium">
+                Descubra por que este Brownie de Chocolate Belga é a receita mais favoritada da semana.
+              </p>
+              <button 
+                onClick={() => navigate('/recipe/brownie-de-chocolate-belga')}
+                className="bg-white text-brand-primary px-10 py-4 rounded-3xl font-black uppercase tracking-widest text-[11px] hover:scale-105 transition-all shadow-2xl"
+              >
+                Ver Receita
+              </button>
             </div>
+            <div className="flex-1 w-full md:w-auto relative group">
+              <img 
+                src="https://images.unsplash.com/photo-1543201757-4439c087961b?auto=format&fit=crop&w=800&q=80" 
+                className="w-full aspect-square object-cover rounded-[32px] rotate-2 shadow-2xl transition-transform group-hover:rotate-0 duration-500"
+                alt="Brownie"
+              />
+              <div className="absolute -top-6 -right-6 w-32 h-32 bg-brand-accent rounded-2xl -rotate-6 flex items-center justify-center shadow-xl">
+                <div className="text-center font-black text-brand-text-main leading-tight">
+                  <div className="text-4xl">4.9</div>
+                  <div className="text-[10px] uppercase tracking-widest opacity-60">Avg Rating</div>
+                </div>
+              </div>
+            </div>
+            {/* Background shapes */}
+            <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
           </div>
-          <div className="flex gap-2 w-full md:w-auto">
-            <input type="email" placeholder="seu@email.com" className="bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-sm outline-none focus:bg-white/20 flex-1 md:w-64 placeholder:text-white/50" />
-            <button className="bg-white text-brand-primary hover:bg-white/90 px-6 py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-colors shadow-sm">Assinar</button>
-          </div>
-        </div>
-      </div>
+        </section>
+      )}
     </motion.div>
   );
 }

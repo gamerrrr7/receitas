@@ -1,8 +1,8 @@
 {
   "name": "Receita Pro",
-  "description": "Professional gastronomic platform with interactive recipes, portion calculators, and immersive cooking mode.",
+  "description": "The definitive gastronomic platform. Discover 30+ curated recipes with professional step-by-step guides, nutritional info, and unit conversion tools.",
   "requestFramePermissions": [
-    "microphone"
+    "geolocation"
   ],
   "majorCapabilities": []
 }

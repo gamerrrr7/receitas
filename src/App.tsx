@@ -10,17 +10,24 @@ import RecipePage from './pages/RecipePage';
 import UnitConverter from './components/UnitConverter';
 import { AnimatePresence } from 'motion/react';
 
+import { UserProvider } from './lib/UserContext';
+
+import ProfilePage from './pages/ProfilePage';
+
 export default function App() {
   return (
-    <BrowserRouter>
-      <div className="min-h-screen bg-brand-bg selection:bg-brand-primary selection:text-white transition-colors duration-500">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/recipe/:slug" element={<RecipePage />} />
-        </Routes>
-        
-        <UnitConverter />
-      </div>
-    </BrowserRouter>
+    <UserProvider>
+      <BrowserRouter>
+        <div className="min-h-screen bg-brand-bg selection:bg-brand-primary selection:text-white transition-colors duration-500">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/recipe/:slug" element={<RecipePage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+          </Routes>
+          
+          <UnitConverter />
+        </div>
+      </BrowserRouter>
+    </UserProvider>
   );
 }
