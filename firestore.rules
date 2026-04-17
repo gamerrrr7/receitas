@@ -1,0 +1,62 @@
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Collection: recipes
+// Document ID: recipeId
+// Fields:
+//   - title: string (required)
+//   - category: string (required) - ['Sweet', 'Savory']
+//   - ingredients: array (required)
+//   - steps: array (required)
+//   - prepTime: number (required)
+//   - ratingAvg: number (optional)
+//
+// Collection: users
+// Document ID: userId
+// Fields:
+//   - displayName: string
+//   - photoURL: string
+//   - favorites: array (uids)
+//
+// ===============================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isValidRecipe(data) {
+      return data.title is string && data.title.size() > 0 && data.title.size() < 200 &&
+             data.category in ['Sweet', 'Savory'] &&
+             data.ingredients is list &&
+             data.steps is list;
+    }
+
+    // Recipes: Anyone can read, only authenticated can write
+    match /recipes/{recipeId} {
+      allow read: if true;
+      allow create: if isAuthenticated() && isValidRecipe(request.resource.data);
+      allow update: if isAuthenticated() && isValidRecipe(request.resource.data);
+      
+      match /comments/{commentId} {
+        allow read: if true;
+        allow create, update: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+        allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      }
+    }
+
+    // User profiles: Only owner can read/write
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+  }
+}

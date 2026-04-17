@@ -1,0 +1,8 @@
+{
+  "name": "Receita Pro",
+  "description": "Professional gastronomic platform with interactive recipes, portion calculators, and immersive cooking mode.",
+  "requestFramePermissions": [
+    "microphone"
+  ],
+  "majorCapabilities": []
+}

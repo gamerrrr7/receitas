@@ -1,0 +1,89 @@
+{
+  "entities": {
+    "Recipe": {
+      "title": "Recipe",
+      "description": "A detailed culinary recipe with ingredients and instructions.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "The name of the recipe" },
+        "description": { "type": "string", "description": "A brief intro to the recipe" },
+        "category": { "type": "string", "enum": ["Sweet", "Savory"], "description": "The primary category" },
+        "subcategory": { "type": "string", "description": "Specific tag like Italian, Vegan, etc." },
+        "difficulty": { "type": "string", "enum": ["Easy", "Medium", "Hard"] },
+        "prepTime": { "type": "number", "description": "Preparation time in minutes" },
+        "cookTime": { "type": "number", "description": "Cooking time in minutes" },
+        "costEstimate": { "type": "string", "enum": ["$", "$$", "$$$"] },
+        "servings": { "type": "number", "description": "Default number of servings" },
+        "ingredients": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "quantity": { "type": "number" },
+              "unit": { "type": "string" },
+              "optional": { "type": "boolean" }
+            }
+          }
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "order": { "type": "number" },
+              "text": { "type": "string" },
+              "image": { "type": "string" }
+            }
+          }
+        },
+        "images": { "type": "array", "items": { "type": "string" } },
+        "ratingAvg": { "type": "number" },
+        "ratingCount": { "type": "number" },
+        "authorId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "category", "ingredients", "steps", "difficulty"]
+    },
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User account details and settings.",
+      "type": "object",
+      "properties": {
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "favorites": { "type": "array", "items": { "type": "string" } },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "Comment": {
+      "title": "Comment",
+      "description": "User feedback on a recipe.",
+      "type": "object",
+      "properties": {
+        "recipeId": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "userPhoto": { "type": "string" },
+        "text": { "type": "string" },
+        "rating": { "type": "number" },
+        "imageUrl": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "firestore": {
+    "/recipes/{recipeId}": {
+      "schema": "Recipe",
+      "description": "Global collection of recipes"
+    },
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User private profiles"
+    },
+    "/recipes/{recipeId}/comments/{commentId}": {
+      "schema": "Comment",
+      "description": "Comments left on specific recipes"
+    }
+  }
+}
