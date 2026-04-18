@@ -32,6 +32,9 @@ export default function RecipeCard({ recipe, onClick }: RecipeCardProps) {
           alt={recipe.title}
           className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
           referrerPolicy="no-referrer"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = `https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80`;
+          }}
         />
         
         {/* Soft Overlays */}

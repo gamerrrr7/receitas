@@ -93,10 +93,13 @@ export default function Home() {
           >
             <div className="relative aspect-[4/5] rounded-[40px] overflow-hidden shadow-2xl skew-y-1">
               <img 
-                src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=1200&q=80" 
+                src="https://images.unsplash.com/photo-1476124369491-e7addf5db371?auto=format&fit=crop&w=1200&q=80" 
                 className="w-full h-full object-cover scale-110" 
                 referrerPolicy="no-referrer"
-                alt="Chef profissional"
+                alt="Risoto Trufado de Cogumelos"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = `https://images.unsplash.com/photo-1476124369491-e7addf5db371?auto=format&fit=crop&w=1200&q=80`;
+                }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
               <div className="absolute bottom-8 left-8 right-8 p-6 bg-white/10 backdrop-blur-xl border border-white/20 rounded-[24px] text-white">
@@ -234,9 +237,13 @@ export default function Home() {
             </div>
             <div className="flex-1 w-full md:w-auto relative group">
               <img 
-                src="https://images.unsplash.com/photo-1543201757-4439c087961b?auto=format&fit=crop&w=800&q=80" 
-                className="w-full aspect-square object-cover rounded-[32px] rotate-2 shadow-2xl transition-transform group-hover:rotate-0 duration-500"
+                src="https://images.unsplash.com/photo-1461008413523-c527c92a3d07?auto=format&fit=crop&w=1200&q=80" 
+                className="w-full h-full object-cover rounded-[32px] rotate-2 shadow-2xl transition-transform group-hover:rotate-0 duration-500 aspect-square"
                 alt="Brownie"
+                referrerPolicy="no-referrer"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = `https://images.unsplash.com/photo-1606347171076-0f73010b991b?auto=format&fit=crop&w=1200&q=80`;
+                }}
               />
               <div className="absolute -top-6 -right-6 w-32 h-32 bg-brand-accent rounded-2xl -rotate-6 flex items-center justify-center shadow-xl">
                 <div className="text-center font-black text-brand-text-main leading-tight">

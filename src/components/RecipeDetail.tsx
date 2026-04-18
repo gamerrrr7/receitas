@@ -69,6 +69,9 @@ export default function RecipeDetail({ recipe, onBack }: RecipeDetailProps) {
             className="w-full h-full object-cover" 
             alt={recipe.title}
             referrerPolicy="no-referrer"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = `https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80`;
+            }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-brand-bg md:from-brand-bg via-transparent to-black/20 dark:from-dark-bg" />
           

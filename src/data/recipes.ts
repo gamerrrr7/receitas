@@ -86,7 +86,7 @@ export const ALL_RECIPES: Recipe[] = [
       { order: 3, text: 'Espalhe sobre o pão quente.' },
       { order: 4, text: 'Finalize com sementes e flocos de pimenta.' }
     ],
-    images: ['https://images.unsplash.com/photo-1490323232029-c5f850d53010?auto=format&fit=crop&w=1200&q=80'],
+    images: ['https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=1200&q=80'],
     ratingAvg: 4.7,
     ratingCount: 110,
     authorId: 'Chef Ana',
@@ -699,7 +699,7 @@ export const ALL_RECIPES: Recipe[] = [
       { order: 2, text: 'Misture os ovos e o açúcar sem fazer espuma.' },
       { order: 3, text: 'Asse a 180°C até formar aquela casquinha craquelada.' }
     ],
-    images: ['https://images.unsplash.com/photo-1543201757-4439c087961b?auto=format&fit=crop&w=1200&q=80'],
+    images: ['https://images.unsplash.com/photo-1461008413523-c527c92a3d07?auto=format&fit=crop&w=1200&q=80'],
     ratingAvg: 4.9,
     ratingCount: 420,
     authorId: 'Chef Choco',
